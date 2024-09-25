@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem name="Faker" id="faker_menu_root">
+        <menuitem id="faker_target_menu" name="Targets" action="faker_target_action"/>
+    </menuitem>
+</odoo>
