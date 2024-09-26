@@ -28,9 +28,10 @@
                                 <field name="model" optional="hide"/>
                                 <field name="field_id"/>
                                 <field name="value_type"/>
-                                <field name="faker_generator"/>
-                                <field name="faker_locale"/>
-                                <field name="faker_example"/>
+                                <field name="faker_generator" readonly="value_type != 'faker'"/>
+                                <field name="faker_locale" readonly="value_type != 'faker'"/>
+                                <field name="constant_value" readonly="value_type != 'constant'"/>
+                                <field name="example"/>
                             </tree>
                         </field>
                     </page>
