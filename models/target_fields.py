@@ -1,5 +1,6 @@
 from faker import Faker
 from odoo import fields, models, api
+from odoo.tools import SQL
 
 def get_value_types():
     return [
@@ -46,6 +47,15 @@ class TargetFields(models.Model):
             record.faker_locale = None
             record.example = None
 
+    def _clear_constant_fields(self, record):
+        if not record.value_type == 'constant':
+            record.constant_value = None
+            record.example = None
+
+    def _clear_random_record_fields(self, record):
+        if not record.value_type == 'random_record':
+            record.example = None
+
     def _get_faker_example(self, record):
         if not record.value_type == 'faker' or not record.faker_generator:
             return
@@ -62,15 +72,37 @@ class TargetFields(models.Model):
 
         self._serialize_example(record, record.constant_value)
 
+    def _get_random_record_example(self, record):
+        if not record.value_type == 'random_record':
+            return
+
+        related_table = record.field_id.relation.replace('.', '_')
+        query_template = 'select id from %s order by RANDOM() limit 1'
+        query = SQL(query_template, SQL.identifier(related_table))
+        
+        self.env.cr.execute(query)
+        result = self.env.cr.fetchone()
+
+        if result == None:
+            return
+
+        self._serialize_example(record, result[0])
+
     def _serialize_example(self, record, value):
-        if record.field_id.ttype == 'integer':
+        if value == None:
+            record.example = None
+            return
+
+        if record.field_id.ttype in ('integer', 'many2one'):
             record.example = int(value)
+            return
 
         if record.field_id.ttype == 'boolean':
             if str(value).lower() in ['true', '1']:
                 record.example = 'True'
             if str(value).lower() in ['false', '0']:
                 record.example = 'False'
+            return
 
         if record.field_id.ttype in ['char', 'text']:
             record.example = value
@@ -79,8 +111,11 @@ class TargetFields(models.Model):
     def get_example(self):
         for record in self:
             self._clear_faker_fields(record)
+            self._clear_constant_fields(record)
+            self._clear_random_record_fields(record)
             self._get_faker_example(record)
             self._get_constant_example(record)
+            self._get_random_record_example(record)
 
     @api.onchange('target_id')
     def update_model_on_target_change(self):
