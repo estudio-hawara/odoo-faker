@@ -1,33 +1,9 @@
 from faker import Faker
 from odoo import fields, models, api
-from odoo.tools import SQL
-
-def get_value_types():
-    return [
-        ('faker', 'Faker'),
-        ('constant', 'Constant'),
-        ('random_record', 'Random record'),
-    ]
-
-def get_faker_generators():
-    return [
-        (method, method)
-        for method in dir(Faker())
-        if not method.startswith("_") and
-            not method.startswith("get_") and
-            not method.startswith("py") and
-            not method.startswith("set_") and
-            method not in [
-                "add_provider", "binary", "cache_pattern", "del_arguments",
-                "enum", "factories", "format", "generator_attrs", "get_formatter",
-                "image", "items", "locales", "optional", "paragraphs", "parse",
-                "passport_dates", "profile", "provider", "providers", "random",
-                "random_choices", "random_letters", "random_sample", "seed",
-                "seed_instance", "seed_locale", "sentences", "simple_profile",
-                "tar", "texts", "time_series", "unique", "weights", "words",
-                "zip"
-            ]
-        ]
+from ..tools.types import get_value_types, get_typed_value
+from ..tools.constant import clear_constant_fields
+from ..tools.faker import get_faker_generators, clear_faker_fields, get_faker
+from ..tools.random_record import get_random_record
 
 class TargetFields(models.Model):
     _name = 'faker.target.fields'
@@ -41,81 +17,28 @@ class TargetFields(models.Model):
     constant_value = fields.Char(string='Constant value')
     example = fields.Char(compute='get_example', string='Example')
 
-    def _clear_faker_fields(self, record):
-        if not record.value_type == 'faker':
-            record.faker_generator = None
-            record.faker_locale = None
-            record.example = None
+    def generate(self):
+        if self.value_type == 'constant':
+            value = self.constant_value
 
-    def _clear_constant_fields(self, record):
-        if not record.value_type == 'constant':
-            record.constant_value = None
-            record.example = None
+        if self.value_type == 'faker':
+            value = get_faker(self)
 
-    def _clear_random_record_fields(self, record):
-        if not record.value_type == 'random_record':
-            record.example = None
+        if self.value_type == 'random_record':
+            value = get_random_record(self, self.env.cr)
 
-    def _get_faker_example(self, record):
-        if not record.value_type == 'faker' or not record.faker_generator:
-            return
-
-        faker = Faker(record.faker_locale)
-        generator = getattr(faker, record.faker_generator)
-        value = generator()
-
-        self._serialize_example(record, value)
-
-    def _get_constant_example(self, record):
-        if not record.value_type == 'constant':
-            return
-
-        self._serialize_example(record, record.constant_value)
-
-    def _get_random_record_example(self, record):
-        if not record.value_type == 'random_record':
-            return
-
-        related_table = record.field_id.relation.replace('.', '_')
-        query_template = 'select id from %s order by RANDOM() limit 1'
-        query = SQL(query_template, SQL.identifier(related_table))
-        
-        self.env.cr.execute(query)
-        result = self.env.cr.fetchone()
-
-        if result == None:
-            return
-
-        self._serialize_example(record, result[0])
-
-    def _serialize_example(self, record, value):
-        if value == None:
-            record.example = None
-            return
-
-        if record.field_id.ttype in ('integer', 'many2one'):
-            record.example = int(value)
-            return
-
-        if record.field_id.ttype == 'boolean':
-            if str(value).lower() in ['true', '1']:
-                record.example = 'True'
-            if str(value).lower() in ['false', '0']:
-                record.example = 'False'
-            return
-
-        if record.field_id.ttype in ['char', 'text']:
-            record.example = value
+        return get_typed_value(self, value)
 
     @api.onchange('value_type', 'constant_value', 'faker_locale', 'faker_generator')
     def get_example(self):
         for record in self:
-            self._clear_faker_fields(record)
-            self._clear_constant_fields(record)
-            self._clear_random_record_fields(record)
-            self._get_faker_example(record)
-            self._get_constant_example(record)
-            self._get_random_record_example(record)
+            if record.value_type != 'constant':
+                clear_constant_fields(record)
+
+            if record.value_type != 'faker':
+                clear_faker_fields(record)
+
+            record.example = record.generate()
 
     @api.onchange('target_id')
     def update_model_on_target_change(self):
