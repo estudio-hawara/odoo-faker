@@ -17,3 +17,8 @@ class Target(models.Model):
             generated[field.field_id.name] = field.generate()
 
         return generated
+
+    def generate_and_save(self):
+        generated = self.generate()
+        self.env[self.model_id.model].create(generated)
+        self.env.cr.commit()

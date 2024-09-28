@@ -25,8 +25,11 @@ def clear_faker_fields(record):
     record.faker_locale = None
 
 def get_faker(record):
-    if not record.value_type == 'faker' or not record.faker_generator:
-        raise('A faked value cannot be created for this {} field'.format(record.value_type))
+    if record.value_type != 'faker':
+        raise Exception('A faked value cannot be created for this {} field'.format(record.value_type))
+
+    if not record.faker_generator:
+        return None
 
     faker = Faker(record.faker_locale)
     generator = getattr(faker, record.faker_generator)

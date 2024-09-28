@@ -18,6 +18,8 @@ class TargetFields(models.Model):
     example = fields.Char(compute='get_example', string='Example')
 
     def generate(self):
+        value = None
+
         if self.value_type == 'constant':
             value = self.constant_value
 
