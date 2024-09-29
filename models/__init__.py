@@ -1,2 +1,2 @@
-from . import target
-from . import target_fields
+from . import generator
+from . import generator_fields

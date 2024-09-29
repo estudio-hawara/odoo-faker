@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="faker_target_tree_view" model="ir.ui.view">
-        <field name="name">faker.target.tree</field>
-        <field name="model">faker.target</field>
+    <record id="faker_generator_tree_view" model="ir.ui.view">
+        <field name="name">faker.generator.tree</field>
+        <field name="model">faker.generator</field>
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
@@ -11,9 +11,9 @@
         </field>
     </record>
 
-    <record id="faker_target_form_view" model="ir.ui.view">
-        <field name="name">faker.target.form</field>
-        <field name="model">faker.target</field>
+    <record id="faker_generator_form_view" model="ir.ui.view">
+        <field name="name">faker.generator.form</field>
+        <field name="model">faker.generator</field>
         <field name="arch" type="xml">
             <form>
                 <group>
@@ -24,7 +24,7 @@
                     <page string="Fields">
                         <field name="field_ids">
                             <tree editable="bottom">
-                                <field name="target_id" optional="hide"/>
+                                <field name="generator_id" optional="hide"/>
                                 <field name="model" optional="hide"/>
                                 <field name="field_id"/>
                                 <field name="value_type"/>
@@ -40,9 +40,9 @@
         </field>
     </record>
 
-    <record id="faker_target_action" model="ir.actions.act_window">
+    <record id="faker_generator_action" model="ir.actions.act_window">
         <field name="name">Faker</field>
-        <field name="res_model">faker.target</field>
+        <field name="res_model">faker.generator</field>
         <field name="view_mode">tree,form</field>
     </record>
 </odoo>

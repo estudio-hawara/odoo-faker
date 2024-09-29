@@ -1,14 +1,15 @@
 from faker import Faker
 from odoo import fields, models, api
-from ..tools.types import get_value_types, get_typed_value
-from ..tools.constant import clear_constant_fields
-from ..tools.faker import get_faker_generators, clear_faker_fields, get_faker
-from ..tools.random_record import get_random_record
+from odoo.addons.faker.generators.types import get_value_types, get_typed_value
+from odoo.addons.faker.generators.constant import clear_constant_fields
+from odoo.addons.faker.generators.faker import get_faker_generators, clear_faker_fields, get_faked_value
+from odoo.addons.faker.generators.random_record import get_random_record
 
-class TargetFields(models.Model):
-    _name = 'faker.target.fields'
+class GeneratorFields(models.Model):
+    _name = 'faker.generator.fields'
+    _description = 'Fields of each faker generator'
 
-    target_id = fields.Many2one('faker.target', string='Target', readonly=True)
+    generator_id = fields.Many2one('faker.generator', string='Generator', readonly=True)
     model = fields.Char(string='Model', readonly=True)
     field_id = fields.Many2one('ir.model.fields', string='Field', domain="[('model', '=', model), ('store', '=', True)]", ondelete='set null')
     value_type = fields.Selection(get_value_types(), string='Type', required=True)
@@ -24,7 +25,7 @@ class TargetFields(models.Model):
             value = self.constant_value
 
         if self.value_type == 'faker':
-            value = get_faker(self)
+            value = get_faked_value(self)
 
         if self.value_type == 'random_record':
             value = get_random_record(self, self.env.cr)
@@ -42,7 +43,7 @@ class TargetFields(models.Model):
 
             record.example = record.generate()
 
-    @api.onchange('target_id')
-    def update_model_on_target_change(self):
+    @api.onchange('generator_id')
+    def update_model_on_generator_change(self):
         for record in self:
-            self.model = self.target_id.model_id.model
+            self.model = self.generator_id.model_id.model
