@@ -14,6 +14,12 @@ class Generator(models.Model):
 
     faker_locale = fields.Many2one('res.lang', string='Faker locale', default=_default_faker_locale)
 
+    def action_show_wizard(self):
+        self.ensure_one()
+        action = self.env.ref('faker.generator_wizard_action').read()[0]
+        action['context'] = {'generator_id': 1}
+        return action
+
     def generate(self):
         generated = {}
         for field in self.field_ids:

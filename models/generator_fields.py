@@ -31,7 +31,7 @@ class GeneratorFields(models.Model):
 
         return get_typed_value(self, value)
 
-    @api.onchange('value_type', 'constant_value', 'faker_locale', 'faker_generator')
+    @api.onchange('value_type', 'constant_value', 'faker_generator')
     def get_example(self):
         for record in self:
             if record.value_type != 'constant':

@@ -7,6 +7,7 @@
             <tree>
                 <field name="name"/>
                 <field name="model_id"/>
+                <field name="faker_locale"/>
             </tree>
         </field>
     </record>
@@ -15,27 +16,36 @@
         <field name="name">faker.generator.form</field>
         <field name="model">faker.generator</field>
         <field name="arch" type="xml">
-            <form>
-                <group>
-                    <field name="name"/>
-                    <field name="model_id"/>
-                </group>
-                <notebook>
-                    <page string="Fields">
-                        <field name="field_ids">
-                            <tree editable="bottom">
-                                <field name="generator_id" optional="hide"/>
-                                <field name="model" optional="hide"/>
-                                <field name="field_id"/>
-                                <field name="value_type"/>
-                                <field name="faker_generator" readonly="value_type != 'faker'"/>
-                                <field name="faker_locale" readonly="value_type != 'faker'"/>
-                                <field name="constant_value" readonly="value_type != 'constant'"/>
-                                <field name="example"/>
-                            </tree>
-                        </field>
-                    </page>
-                </notebook>
+            <form string="Generator">
+                <header>
+                    <button
+                        class="oe_highlight"
+                        name="action_show_wizard"
+                        type="object"
+                        string="Generate"
+                        icon="fa-industry"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="model_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Fields">
+                            <field name="field_ids">
+                                <tree editable="bottom">
+                                    <field name="generator_id" optional="hide"/>
+                                    <field name="model" optional="hide"/>
+                                    <field name="field_id"/>
+                                    <field name="value_type"/>
+                                    <field name="faker_generator" readonly="value_type != 'faker'"/>
+                                    <field name="constant_value" readonly="value_type != 'constant'"/>
+                                    <field name="example"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
             </form>
         </field>
     </record>
@@ -44,5 +54,32 @@
         <field name="name">Generator</field>
         <field name="res_model">faker.generator</field>
         <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="generator_wizard_view" model="ir.ui.view">
+        <field name="name">faker.generator.wizard.view</field>
+        <field name="model">faker.generator.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>How many records do you want to generate?</p>
+
+                <group>
+                    <field name="generator_id"/>
+                    <field name="records"/>
+                </group>
+
+                <footer>
+                   <button name="action_generate_records" string="Generate" type="object"/>
+                   <button name="cancel" string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="generator_wizard_action" model="ir.actions.act_window">
+        <field name="name">Generator wizard</field>
+        <field name="res_model">faker.generator.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
     </record>
 </odoo>
