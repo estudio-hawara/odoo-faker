@@ -14,7 +14,6 @@ class GeneratorFields(models.Model):
     field_id = fields.Many2one('ir.model.fields', string='Field', domain="[('model', '=', model), ('store', '=', True)]", ondelete='set null')
     value_type = fields.Selection(get_value_types(), string='Type', required=True)
     faker_generator = fields.Selection(get_faker_generators(), string='Faker generator')
-    faker_locale = fields.Many2one('res.lang', string='Faker locale')
     constant_value = fields.Char(string='Constant value')
     example = fields.Char(compute='get_example', string='Example')
 
