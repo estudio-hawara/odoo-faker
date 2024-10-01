@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <menuitem name="Faker" id="faker_menu_root">
-        <menuitem id="faker_generator_menu" name="Generators" action="faker_generator_action"/>
+    <menuitem id="faker_menu_root" name="Faker">
+        <menuitem id="generator_menu" name="Generators" action="show_generator_action"/>
     </menuitem>
 </odoo>

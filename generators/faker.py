@@ -2,6 +2,7 @@ from faker import Faker
 
 def clear_faker_fields(record):
     record.faker_generator = None
+    record.faker_locale = None
 
 def get_faker_generators():
     return [
@@ -26,7 +27,7 @@ def get_faked_value(record):
     if not record.faker_generator:
         return None
 
-    locale = 'en_US' if not record.generator_id.faker_locale else record.generator_id.faker_locale.code
+    locale = 'en_US' if not record.faker_locale else record.faker_locale.code
     faker = Faker(locale)
     generator = getattr(faker, record.faker_generator)
     return generator()

@@ -9,11 +9,15 @@ class GeneratorFields(models.Model):
     _name = 'faker.generator.fields'
     _description = 'Fields of each faker generator'
 
+    def _default_faker_locale(self):
+        return self.generator_id.faker_locale
+
     generator_id = fields.Many2one('faker.generator', string='Generator', readonly=True)
     model = fields.Char(string='Model', readonly=True)
     field_id = fields.Many2one('ir.model.fields', string='Field', domain="[('model', '=', model), ('store', '=', True)]", ondelete='set null')
     value_type = fields.Selection(get_value_types(), string='Type', required=True)
     faker_generator = fields.Selection(get_faker_generators(), string='Faker generator')
+    faker_locale = fields.Many2one('res.lang', string='Faker locale', default=_default_faker_locale)
     constant_value = fields.Char(string='Constant value')
     example = fields.Char(compute='get_example', string='Example')
 
@@ -31,7 +35,13 @@ class GeneratorFields(models.Model):
 
         return get_typed_value(self, value)
 
-    @api.onchange('value_type', 'constant_value', 'faker_generator')
+    @api.onchange('value_type')
+    def set_locale(self):
+        for record in self:
+            if record.value_type == 'faker' and not record.faker_locale:
+                record.faker_locale = self._default_faker_locale()
+
+    @api.onchange('value_type', 'constant_value', 'faker_generator', 'faker_locale')
     def get_example(self):
         for record in self:
             if record.value_type != 'constant':

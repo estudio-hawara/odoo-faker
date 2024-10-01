@@ -8,7 +8,8 @@
     'depends': ['base'],
     'data': [
         'security/ir.model.access.csv',
-        'views/faker_generator_views.xml',
+        'views/generator_views.xml',
+        'views/generator_wizard_views.xml',
         'views/menu_items.xml'
     ],
     'extenal_dependencies': {
