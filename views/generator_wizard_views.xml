@@ -13,7 +13,11 @@
                 </group>
 
                 <footer>
-                   <button name="action_generate_records" string="Generate" type="object"/>
+                   <button
+                        class="oe_highlight"
+                        name="action_generate_records"
+                        string="Generate"
+                        type="object"/>
                    <button name="cancel" string="Cancel" special="cancel"/>
                 </footer>
             </form>
