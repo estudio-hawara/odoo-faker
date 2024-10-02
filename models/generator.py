@@ -22,7 +22,7 @@ class Generator(models.Model):
     def generate(self):
         generated = {}
         for field in self.field_ids:
-            generated[field.field_id.name] = field.generate()
+            generated[field.field_id.name] = field.generate(include_rows=True)
         return generated
 
     def generate_and_save(self):

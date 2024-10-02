@@ -42,6 +42,8 @@
                                     <field name="faker_generator" readonly="value_type != 'faker'"/>
                                     <field name="faker_locale" readonly="value_type != 'faker'"/>
                                     <field name="constant_value" readonly="value_type != 'constant'"/>
+                                    <field name="row_generator_id" readonly="value_type != 'generated_rows'"/>
+                                    <field name="row_count" readonly="value_type != 'generated_rows'"/>
                                     <field name="example"/>
                                 </tree>
                             </field>

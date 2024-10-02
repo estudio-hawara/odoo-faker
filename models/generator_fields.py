@@ -1,8 +1,10 @@
 from faker import Faker
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 from odoo.addons.faker.generators.types import get_value_types, get_typed_value
 from odoo.addons.faker.generators.constant import clear_constant_fields
 from odoo.addons.faker.generators.faker import get_faker_generators, clear_faker_fields, get_faked_value
+from odoo.addons.faker.generators.generated_rows import get_generated_rows_value, clear_generated_rows_fields
 from odoo.addons.faker.generators.random_record import get_random_record
 
 class GeneratorFields(models.Model):
@@ -18,10 +20,12 @@ class GeneratorFields(models.Model):
     value_type = fields.Selection(get_value_types(), string='Type', required=True)
     faker_generator = fields.Selection(get_faker_generators(), string='Faker generator')
     faker_locale = fields.Many2one('res.lang', string='Faker locale', default=_default_faker_locale)
+    row_generator_id = fields.Many2one('faker.generator', string='Row generator')
+    row_count = fields.Integer(string='Row count')
     constant_value = fields.Char(string='Constant value')
     example = fields.Char(compute='get_example', string='Example')
 
-    def generate(self):
+    def generate(self, include_rows = False):
         value = None
 
         if self.value_type == 'constant':
@@ -33,7 +37,44 @@ class GeneratorFields(models.Model):
         if self.value_type == 'random_record':
             value = get_random_record(self, self.env.cr)
 
+        if self.value_type == 'generated_rows' and include_rows:
+            value = get_generated_rows_value(self)
+
         return get_typed_value(self, value)
+
+    @api.constrains('field_id', 'value_type')
+    def check_value_type(self):
+        validation_result = self.validate_value_type()
+
+        if 'warning' in validation_result:
+            raise ValidationError(validation_result['warning']['message'])
+
+    @api.onchange('field_id', 'value_type')
+    def validate_value_type(self):
+        for record in self:
+            if not record.field_id:
+                return
+
+            message = None
+
+            if record.value_type == 'random_record' and record.field_id.ttype != 'many2one':
+                message = 'The random record type can only be used for fields that represent a many to one relationship.'
+
+            if record.value_type == 'generated_rows' and record.field_id.ttype != 'one2many':
+                message = 'The generated rows type can only be used for fields that represent a one to many relationship.'
+
+            if not message:
+                return
+
+            message += "\nPlease, check the configuration of the field: {}.".format(record.field_id.display_name)
+
+            return {
+                'warning': {
+                    'title': 'Validation warning',
+                    'message': message,
+                    'type': 'notification',
+                }
+            }
 
     @api.onchange('value_type')
     def set_locale(self):
@@ -49,6 +90,9 @@ class GeneratorFields(models.Model):
 
             if record.value_type != 'faker':
                 clear_faker_fields(record)
+
+            if record.value_type != 'generated_rows':
+                clear_generated_rows_fields(record)
 
             record.example = record.generate()
 

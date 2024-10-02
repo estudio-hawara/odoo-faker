@@ -3,6 +3,7 @@ def get_value_types():
         ('faker', 'Faker'),
         ('constant', 'Constant'),
         ('random_record', 'Random record'),
+        ('generated_rows', 'Generated rows'),
     ]
 
 def get_typed_value(record, value):
