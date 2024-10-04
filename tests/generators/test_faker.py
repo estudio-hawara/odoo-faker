@@ -11,12 +11,14 @@ class TestFaker(TransactionCase):
         # Prepare
         field = self.env['faker.generator.fields'].new()
         field.faker_generator = 'city'
+        field.faker_locale = 'en_US'
 
         # Act
         clear_faker_fields(field)
 
         # Assert
         assert not field.faker_generator
+        assert not field.faker_locale
 
     def test_get_faker_generators(self):
         # Prepare
