@@ -5,13 +5,13 @@ class Generator(models.Model):
     _name = 'faker.generator'
     _description = 'Generators of fake data for each model'
 
-    def _default_faker_locale(self):
+    def default_faker_locale(self):
         return get_lang(self.env)
 
     name = fields.Char(string='Name')
     model_id = fields.Many2one('ir.model', string='Model')
     field_ids = fields.One2many('faker.generator.fields', 'generator_id', string='Fields')
-    faker_locale = fields.Many2one('res.lang', string='Faker locale', default=_default_faker_locale)
+    faker_locale = fields.Many2one('res.lang', string='Faker locale', default=default_faker_locale)
 
     def show_generator_wizard(self):
         self.ensure_one()
