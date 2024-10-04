@@ -10,6 +10,7 @@
                 <group>
                     <field name="generator_id"/>
                     <field name="records"/>
+                    <field name="max_errors"/>
                 </group>
 
                 <footer>
