@@ -11,6 +11,9 @@ class GeneratorFields(models.Model):
     _name = 'faker.generator.fields'
     _description = 'Fields of each faker generator'
     _order = 'sequence'
+    _sql_constraints = [
+        ('unique_field_per_generator', 'unique(generator_id, field_id)', 'A field cannot be added twice to the same generator'),
+    ]
 
     def default_faker_locale(self):
         return self.generator_id.faker_locale
