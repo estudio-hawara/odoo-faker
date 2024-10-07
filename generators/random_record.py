@@ -10,7 +10,7 @@ def get_random_record(record, cr):
     related_table = record.field_id.relation.replace('.', '_')
     query_template = 'select id from %s order by RANDOM() limit 1'
     query = SQL(query_template, SQL.identifier(related_table))
-    
+
     cr.execute(query)
     result = cr.fetchone()
 
