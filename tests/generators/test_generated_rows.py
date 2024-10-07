@@ -22,4 +22,32 @@ class TestGeneratedRows(TransactionCase):
         assert not field.row_count_max
 
     def test_get_generated_rows_value(self):
-        pass
+        # Prepare
+        partner_model = self.env['ir.model'].search([('model', '=', 'res.partner')])
+
+        partner_field_name = self.env['ir.model.fields'].search([
+            ('model', '=', 'res.partner'),
+            ('name', '=', 'name'),
+        ])
+
+        partner_generator = self.env['faker.generator'].create({
+            'model_id': partner_model.id,
+            'field_ids': [(0, 0, {
+                'field_id': partner_field_name.id,
+                'value_type': 'constant',
+                'constant_value': 'Emmy Nöether',
+            })],
+        })
+
+        field = self.env['faker.generator.fields'].new()
+        field.value_type = 'generated_rows'
+        field.row_generator_id = partner_generator
+        field.row_count_min = 1
+        field.row_count_max = 1
+
+        # Act
+        generated = get_generated_rows_value(field)
+
+        # Assert
+        assert len(generated) == 1
+        assert generated[0][2]['name'] == 'Emmy Nöether'
