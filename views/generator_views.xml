@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="generator_tree_view" model="ir.ui.view">
+    <record id="generator_list_view" model="ir.ui.view">
         <field name="name">faker.generator.tree</field>
         <field name="model">faker.generator</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="model_id"/>
                 <field name="faker_locale"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -34,7 +34,7 @@
                     <notebook>
                         <page string="Fields">
                             <field name="field_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="generator_id" optional="hide"/>
                                     <field name="model" optional="hide"/>
                                     <field name="sequence" widget="handle"/>
@@ -47,7 +47,7 @@
                                     <field name="row_count_min" readonly="value_type != 'generated_rows'" widget="char" optional="hide"/>
                                     <field name="row_count_max" readonly="value_type != 'generated_rows'" widget="char" optional="hide"/>
                                     <field name="example"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -59,6 +59,6 @@
     <record id="show_generator_action" model="ir.actions.act_window">
         <field name="name">Generator</field>
         <field name="res_model">faker.generator</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
