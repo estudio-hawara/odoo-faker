@@ -1,3 +1,5 @@
+> This addon can now be found at: https://github.com/estudio-hawara/odoo-addons/
+
 # Odoo Faker
 
 ![Screencast of Odoo Faker generating 25 random sale orders](./static/description/screenshots/screencast.gif)
