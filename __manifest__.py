@@ -1,6 +1,6 @@
 {
     'name': 'Faker',
-    'version': '1.0',
+    'version': '18.0.0.0.1',
     'depends': ['base'],
     'author': 'Estudio Hawara <estudio@hawara.es>',
     'category': 'Administration',
@@ -17,5 +17,5 @@
             'Faker'
         ]
     },
-    'license': 'LGPL-3'
+    'license': 'LGPL-3',
 }
